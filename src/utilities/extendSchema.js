@@ -25,8 +25,8 @@ import {
   GraphQLScalarType,
   GraphQLEnumType,
   GraphQLInputObjectType,
-  isInputType,
-  isOutputType,
+  assertInputType,
+  assertOutputType,
 } from '../type/definition';
 
 import {
@@ -295,15 +295,11 @@ export function extendSchema(
   }
 
   function getInputTypeFromAST(node: NamedTypeNode): GraphQLInputType {
-    const type = getTypeFromAST(node);
-    invariant(isInputType(type), 'Must be Input type.');
-    return (type: any);
+    return assertInputType(getTypeFromAST(node));
   }
 
   function getOutputTypeFromAST(node: NamedTypeNode): GraphQLOutputType {
-    const type = getTypeFromAST(node);
-    invariant(isOutputType(type), 'Must be Output type.');
-    return (type: any);
+    return assertOutputType(getTypeFromAST(node));
   }
 
   // Given a name, returns a type from either the existing schema or an
@@ -441,10 +437,10 @@ export function extendSchema(
 
   function extendFieldType<T: GraphQLType>(typeDef: T): T {
     if (typeDef instanceof GraphQLList) {
-      return (new GraphQLList(extendFieldType(typeDef.ofType)): any);
+      return new GraphQLList(extendFieldType(typeDef.ofType));
     }
     if (typeDef instanceof GraphQLNonNull) {
-      return (new GraphQLNonNull(extendFieldType(typeDef.ofType)): any);
+      return new GraphQLNonNull(extendFieldType(typeDef.ofType));
     }
     return getTypeFromDef(typeDef);
   }
